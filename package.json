@@ -23,7 +23,9 @@
   "dependencies": {
     "@nestjs/common": "^7.6.15",
     "@nestjs/core": "^7.6.15",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^7.6.15",
+    "axios": "^0.21.1",
     "postgraphile": "^4.11.0",
     "postgraphile-nest": "^1.0.6",
     "reflect-metadata": "^0.1.13",
