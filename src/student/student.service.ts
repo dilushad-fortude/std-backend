@@ -2,25 +2,42 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { response } from 'express';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { Student } from './entities/student.entity';
 
 const POSTGRAPHILE_URL = "http://localhost:5000/graphql";
 @Injectable()
 export class StudentService {
-  create(createStudentDto: CreateStudentDto) {
-    return 'This action adds a new student';
+  create(reqBody: Student) {
+    return axios.post(POSTGRAPHILE_URL, {
+      query: `mutation createStudent {
+        createStudent(input:{student:{
+            name: "${reqBody.name}", 
+            email: "${reqBody.email}", 
+            dob: "${reqBody.dob}"}}) {
+          student{
+            id, name
+          }
+        }
+      }`
+    }).then(res => res.data.data.createStudent.student)
+    .catch(function (error) {
+      response.send({
+        status: '500',
+        message: error
+      })
+    });
   }
 
   findAll() {
     return axios.post(POSTGRAPHILE_URL, {
-      query: `query ItemQuery {
-        allItems{
+      query: `query GetAllStudentsQuery {
+        allStudents {
           nodes {
-            name,
-            description
+            id,name,dob,email
           }
         }
       }`
-    }).then(data => data.data.data.allItems.nodes)
+    }).then(res => res.data.data.allStudents.nodes)
       .catch(function (error) {
         response.send({
           status: '500',
@@ -32,12 +49,12 @@ export class StudentService {
 
   findOne(id: string) {
     return axios.post(POSTGRAPHILE_URL, {
-      query: `query OneItemQuery {
-        item(nodeId:"${id}"){
-          name,description
+      query: `query getOneStudent {
+        studentById(id:"${id}"){
+          id, name, dob, email
         }
       }`
-    }).then(data => data.data.data.item)
+    }).then(data => data.data.data.studentById)
     .catch(function (error) {
       response.send({
         status: '500',
@@ -46,23 +63,20 @@ export class StudentService {
     });
   }
 
-  update(id: string, reqBody: any) {
+  update(id: string, reqBody: Student) {
     return axios.post(POSTGRAPHILE_URL, {
-      query: `mutation UpdateItem {
-        updateItem(
-          input:{nodeId:"${id}", 
-          itemPatch:{
-            name: "${reqBody.name}",
-            description: "${reqBody.description}"
-        }}) {
-          item {
-            nodeId,
-            name,
-            description
+      query: `mutation updateStudent{
+        updateStudentById(input:{id:"${id}", studentPatch:{
+          name: "${reqBody.name}",
+          email:" ${reqBody.email}",
+          dob: "${reqBody.dob}"
+        }}){
+          student{
+            id,name
           }
         }
       }`
-    }).then(data => data.data.data.updateItem.item)
+    }).then(res => res.data.data.updateStudentById.student)
     .catch(function (error) {
       response.send({
         status: '500',
@@ -73,12 +87,14 @@ export class StudentService {
 
   remove(id: string) {
     return axios.post(POSTGRAPHILE_URL, {
-      query: `mutation RemoveItem {
-        deleteItem(input:{nodeId: "${id}"}){
-          deletedItemId
+      query: `mutation removeStudent {
+        deleteStudentById(input:{id:"${id}"}){
+          student{
+            id
+          }
         }
       }`
-    }).then(data => data.data.data.deleteItem)
+    }).then(data => data.data.data.deleteStudentById.student)
     .catch(function (error) {
       response.send({
         status: '500',

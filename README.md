@@ -71,3 +71,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+postgraphile -c "postgres://postgres:mysecretpassword@localhost:5432/my_database"
+postgraphile -c "postgres://postgres:mysecretpassword@localhost:5432/std-mngmnt"
