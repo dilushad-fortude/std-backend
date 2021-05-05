@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { response } from 'express';
+import { Transport, ClientProxyFactory, ClientOptions, ClientProxy } from '@nestjs/microservices';
+import { UpdateStudentDto } from './dto/update-student.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { Student } from './entities/student.entity';
+import { StudentInput } from './inputs/students.input';
 
-const POSTGRAPHILE_URL = "http://localhost:5000/graphql";
+const options: ClientOptions = {
+  transport: Transport.TCP,
+  options: {
+    host: '127.0.0.1',
+    port: 8877
+  }
+};
+
+
+const POSTGRAPHILE_URL = "http://localhost:3001/graphql";
 @Injectable()
 export class StudentService {
-  create(reqBody: Student) {
+  private client: ClientProxy;
+
+  constructor() {
+    this.client = ClientProxyFactory.create(options);
+  }
+
+  create(reqBody: StudentInput) {
     return axios.post(POSTGRAPHILE_URL, {
       query: `mutation createStudent {
         createStudent(input:{student:{
@@ -63,7 +80,18 @@ export class StudentService {
     });
   }
 
-  update(id: string, reqBody: Student) {
+  update(id: string, reqBody: UpdateStudentDto) {
+    console.log("update", reqBody,  `mutation updateStudent{
+      updateStudentById(input:{id:"${id}", studentPatch:{
+        name: "${reqBody.name}",
+        email:" ${reqBody.email}",
+        dob: "${reqBody.dob}"
+      }}){
+        student{
+          id,name
+        }
+      }
+    }`);
     return axios.post(POSTGRAPHILE_URL, {
       query: `mutation updateStudent{
         updateStudentById(input:{id:"${id}", studentPatch:{
