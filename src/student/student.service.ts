@@ -37,12 +37,12 @@ export class StudentService {
         }
       }`
     }).then(res => res.data.data.createStudent.student)
-    .catch(function (error) {
-      response.send({
-        status: '500',
-        message: error
-      })
-    });
+      .catch(function (error) {
+        response.send({
+          status: '500',
+          message: error
+        })
+      });
   }
 
   findAll() {
@@ -72,26 +72,15 @@ export class StudentService {
         }
       }`
     }).then(data => data.data.data.studentById)
-    .catch(function (error) {
-      response.send({
-        status: '500',
-        message: error
-      })
-    });
+      .catch(function (error) {
+        response.send({
+          status: '500',
+          message: error
+        })
+      });
   }
 
   update(id: string, reqBody: UpdateStudentDto) {
-    console.log("update", reqBody,  `mutation updateStudent{
-      updateStudentById(input:{id:"${id}", studentPatch:{
-        name: "${reqBody.name}",
-        email:" ${reqBody.email}",
-        dob: "${reqBody.dob}"
-      }}){
-        student{
-          id,name
-        }
-      }
-    }`);
     return axios.post(POSTGRAPHILE_URL, {
       query: `mutation updateStudent{
         updateStudentById(input:{id:"${id}", studentPatch:{
@@ -105,12 +94,12 @@ export class StudentService {
         }
       }`
     }).then(res => res.data.data.updateStudentById.student)
-    .catch(function (error) {
-      response.send({
-        status: '500',
-        message: error
-      })
-    });
+      .catch(function (error) {
+        response.send({
+          status: '500',
+          message: error
+        })
+      });
   }
 
   remove(id: string) {
@@ -123,11 +112,11 @@ export class StudentService {
         }
       }`
     }).then(data => data.data.data.deleteStudentById.student)
-    .catch(function (error) {
-      response.send({
-        status: '500',
-        message: error
-      })
-    });
+      .catch(function (error) {
+        response.send({
+          status: '500',
+          message: error
+        })
+      });
   }
 }
